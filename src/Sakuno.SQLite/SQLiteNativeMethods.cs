@@ -30,6 +30,14 @@ namespace Sakuno.SQLite
         public static extern SQLiteResultCode sqlite3_finalize(IntPtr pStmt);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_bind_parameter_count(SQLiteStatementHandle pStmt);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_bind_parameter_index(SQLiteStatementHandle pStmt, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringMarshaler))] string zName);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
+        public static extern string sqlite3_bind_parameter_name(SQLiteStatementHandle pStmt, int i);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
         public static extern string sqlite3_sql(SQLiteStatementHandle pStmt);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -38,6 +46,24 @@ namespace Sakuno.SQLite
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int sqlite3_stmt_readonly(SQLiteStatementHandle pStmt);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_column_count(SQLiteStatementHandle pStmt);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteDatatype sqlite3_column_type(SQLiteStatementHandle pStmt, int iCol);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
+        public static extern string sqlite3_column_name(SQLiteStatementHandle pStmt, int iCol);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
+        public static extern string sqlite3_column_database_name(SQLiteStatementHandle pStmt, int iCol);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
+        public static extern string sqlite3_column_table_name(SQLiteStatementHandle pStmt, int iCol);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
+        public static extern string sqlite3_column_origin_name(SQLiteStatementHandle pStmt, int iCol);
 
     }
 }
