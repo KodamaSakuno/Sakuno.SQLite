@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable IDE1006
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace Sakuno.SQLite
@@ -22,5 +24,21 @@ namespace Sakuno.SQLite
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern SQLiteResultCode sqlite3_extended_errcode(SQLiteConnectionHandle db);
 
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_prepare_v2(SQLiteConnectionHandle db, byte* zSql, int nByte, out SQLiteStatementHandle ppStmt, out byte* pzTail);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_finalize(IntPtr pStmt);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
+        public static extern string sqlite3_sql(SQLiteStatementHandle pStmt);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringMarshaler))]
+        public static extern string sqlite3_expanded_sql(SQLiteStatementHandle pStmt);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_stmt_readonly(SQLiteStatementHandle pStmt);
+
     }
 }
+#pragma warning restore IDE1006
