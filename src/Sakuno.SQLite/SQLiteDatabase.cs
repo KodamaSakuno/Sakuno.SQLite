@@ -9,6 +9,11 @@ namespace Sakuno.SQLite
 
         public SQLiteResultCode LastErrorCode => SQLiteNativeMethods.sqlite3_extended_errcode(_handle);
 
+        static SQLiteDatabase()
+        {
+            Datatype.Initialize();
+        }
+
         public SQLiteDatabase(string filename) : this(filename, OpenDatabaseOptions.ReadWrite | OpenDatabaseOptions.Create) { }
         public SQLiteDatabase(string filename, OpenDatabaseOptions options)
         {
