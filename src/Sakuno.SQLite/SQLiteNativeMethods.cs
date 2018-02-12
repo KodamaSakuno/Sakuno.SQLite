@@ -42,6 +42,22 @@ namespace Sakuno.SQLite
         public static extern string sqlite3_bind_parameter_name(SQLiteStatementHandle pStmt, int i);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_bind_null(SQLiteStatementHandle pStmt, int i);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_bind_text(SQLiteStatementHandle pStmt, int i, IntPtr zData, int nData, IntPtr xDel);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_bind_int(SQLiteStatementHandle pStmt, int i, int iValue);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_bind_int64(SQLiteStatementHandle pStmt, int i, long iValue);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_bind_double(SQLiteStatementHandle pStmt, int i, double iValue);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_bind_blob(SQLiteStatementHandle pStmt, int i, byte[] zData, int nData, IntPtr xDel);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_clear_bindings(SQLiteStatementHandle pStmt);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
         public static extern string sqlite3_sql(SQLiteStatementHandle pStmt);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]

@@ -60,6 +60,27 @@ namespace Sakuno.SQLite
         public string GetTableName(int column) => SQLiteNativeMethods.sqlite3_column_table_name(_handle, column);
         public string GetOriginName(int column) => SQLiteNativeMethods.sqlite3_column_origin_name(_handle, column);
 
+        public void BindNull(string parameter)
+        {
+            if (_parameterIndexes == null || !_parameterIndexes.TryGetValue(parameter, out var index))
+                return;
+
+            var resultCode = SQLiteNativeMethods.sqlite3_bind_null(_handle, index);
+            if (resultCode != SQLiteResultCode.OK)
+                throw new SQLiteException(resultCode);
+        }
+        public void Bind<T>(string parameter, T value)
+        {
+            if (_parameterIndexes == null || !_parameterIndexes.TryGetValue(parameter, out var index))
+                return;
+
+            var resultCode = Datatype.Of<T>.Bind(_handle, index, value);
+            if (resultCode != SQLiteResultCode.OK)
+                throw new SQLiteException(resultCode);
+        }
+
+        public void ClearBindings() => SQLiteNativeMethods.sqlite3_clear_bindings(_handle);
+
         static class Cache<T>
         {
             public static Func<SQLiteStatement, SQLiteQuery, T> Call = null;

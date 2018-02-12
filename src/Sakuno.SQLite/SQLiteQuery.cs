@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Sakuno.SQLite
 {
@@ -106,6 +107,21 @@ namespace Sakuno.SQLite
             }
 
             return result;
+        }
+
+        public void Bind<T>(string parameter, T value)
+        {
+            if (Datatype.Of<T>.Bind == null)
+                throw new NotSupportedException();
+
+            foreach (var statement in _statements)
+                statement.Bind(parameter, value);
+        }
+
+        public void ClearBindings()
+        {
+            foreach (var statement in _statements)
+                statement.ClearBindings();
         }
     }
 }
