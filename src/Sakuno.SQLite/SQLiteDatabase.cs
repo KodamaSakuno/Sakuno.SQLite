@@ -9,6 +9,9 @@ namespace Sakuno.SQLite
 
         public SQLiteResultCode LastErrorCode => SQLiteNativeMethods.sqlite3_extended_errcode(_handle);
 
+        public int Changes => SQLiteNativeMethods.sqlite3_changes(_handle);
+        public int TotalChanges => SQLiteNativeMethods.sqlite3_total_changes(_handle);
+
         static SQLiteDatabase()
         {
             Datatype.Initialize();
@@ -68,5 +71,8 @@ namespace Sakuno.SQLite
 
             return new SQLiteQuery(this, statements);
         }
+
+        public void Execute(string sql) => CreateQuery(sql).Execute();
+        public T Execute<T>(string sql) => CreateQuery(sql).Execute<T>();
     }
 }

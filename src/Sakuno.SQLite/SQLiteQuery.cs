@@ -26,6 +26,8 @@ namespace Sakuno.SQLite
             }
         }
 
+        public int RowsAffected { get; private set; }
+
         internal SQLiteQuery(SQLiteDatabase database, List<SQLiteStatement> statements)
         {
             _database = database;
@@ -53,6 +55,57 @@ namespace Sakuno.SQLite
             }
 
             return builder.ToString();
+        }
+
+        public void Execute()
+        {
+            foreach (var statement in _statements)
+            {
+                var resultCode = statement.Execute();
+
+                switch (resultCode)
+                {
+                    case SQLiteResultCode.Done:
+                        RowsAffected += _database.Changes;
+                        break;
+
+                    case SQLiteResultCode.Row:
+                        break;
+
+                    default:
+                        throw new SQLiteException(resultCode);
+                }
+
+                statement.Reset();
+            }
+        }
+        public T Execute<T>() => Execute<T>(0);
+        public T Execute<T>(int column)
+        {
+            var result = default(T);
+
+            foreach (var statement in _statements)
+            {
+                var resultCode = statement.Execute();
+
+                switch (resultCode)
+                {
+                    case SQLiteResultCode.Done:
+                        RowsAffected += _database.Changes;
+                        break;
+
+                    case SQLiteResultCode.Row:
+                        result = statement.Get<T>(column);
+                        break;
+
+                    default:
+                        throw new SQLiteException(resultCode);
+                }
+
+                statement.Reset();
+            }
+
+            return result;
         }
     }
 }

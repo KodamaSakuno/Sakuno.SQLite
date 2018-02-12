@@ -27,6 +27,10 @@ namespace Sakuno.SQLite
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern SQLiteResultCode sqlite3_prepare_v2(SQLiteConnectionHandle db, byte* zSql, int nByte, out SQLiteStatementHandle ppStmt, out byte* pzTail);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_step(SQLiteStatementHandle pStmt);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_reset(SQLiteStatementHandle pStmt);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern SQLiteResultCode sqlite3_finalize(IntPtr pStmt);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -46,6 +50,11 @@ namespace Sakuno.SQLite
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int sqlite3_stmt_readonly(SQLiteStatementHandle pStmt);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_changes(SQLiteConnectionHandle db);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_total_changes(SQLiteConnectionHandle db);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int sqlite3_column_count(SQLiteStatementHandle pStmt);

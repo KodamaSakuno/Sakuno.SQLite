@@ -43,10 +43,26 @@ namespace Sakuno.SQLite
 
         public string GetExpandedSQL() => SQLiteNativeMethods.sqlite3_expanded_sql(_handle);
 
+        public SQLiteResultCode Execute() => SQLiteNativeMethods.sqlite3_step(_handle);
+
+        public void Reset() => SQLiteNativeMethods.sqlite3_reset(_handle);
+
+        public T Get<T>(int column)
+        {
+            var call = Datatype.Of<T>.Get ?? throw new NotSupportedException();
+
+            return call(_handle, column);
+        }
+
         public string GetColumnName(int column) => SQLiteNativeMethods.sqlite3_column_name(_handle, column);
 
         public string GetDatabaseName(int column) => SQLiteNativeMethods.sqlite3_column_database_name(_handle, column);
         public string GetTableName(int column) => SQLiteNativeMethods.sqlite3_column_table_name(_handle, column);
         public string GetOriginName(int column) => SQLiteNativeMethods.sqlite3_column_origin_name(_handle, column);
+
+        static class Cache<T>
+        {
+            public static Func<SQLiteStatement, SQLiteQuery, T> Call = null;
+        }
     }
 }
