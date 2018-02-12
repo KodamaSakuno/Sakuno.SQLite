@@ -12,20 +12,34 @@ namespace Sakuno.SQLite
             Of<double>.Get = SQLiteNativeMethods.sqlite3_column_double;
             Of<string>.Get = SQLiteNativeMethods.sqlite3_column_text;
             Of<bool>.Get = GetBoolean;
+            Of<byte>.Get = GetByte;
             Of<short>.Get = GetInt16;
             Of<byte[]>.Get = GetBytes;
+            Of<float>.Get = GetSingleFloat;
+            Of<sbyte>.Get = OfCast<sbyte, byte>.Get;
+            Of<ushort>.Get = OfCast<ushort, short>.Get;
+            Of<uint>.Get = OfCast<uint, int>.Get;
+            Of<ulong>.Get = OfCast<ulong, long>.Get;
 
             Of<int>.Bind = SQLiteNativeMethods.sqlite3_bind_int;
             Of<long>.Bind = SQLiteNativeMethods.sqlite3_bind_int64;
             Of<double>.Bind = SQLiteNativeMethods.sqlite3_bind_double;
             Of<string>.Bind = BindText;
             Of<bool>.Bind = BindBoolean;
+            Of<byte>.Bind = BindByte;
             Of<short>.Bind = BindInt16;
             Of<byte[]>.Bind = BindBytes;
+            Of<float>.Bind = BindSingleFloat;
+            Of<sbyte>.Bind = OfCast<sbyte, byte>.Bind;
+            Of<ushort>.Bind = OfCast<ushort, short>.Bind;
+            Of<uint>.Bind = OfCast<uint, int>.Bind;
+            Of<ulong>.Bind = OfCast<ulong, long>.Bind;
         }
 
         static bool GetBoolean(SQLiteStatementHandle handle, int column) => Of<int>.Get(handle, column) != 0;
+        static byte GetByte(SQLiteStatementHandle handle, int column) => (byte)Of<int>.Get(handle, column);
         static short GetInt16(SQLiteStatementHandle handle, int column) => (short)Of<int>.Get(handle, column);
+        static float GetSingleFloat(SQLiteStatementHandle handle, int column) => (float)Of<double>.Get(handle, column);
 
         static unsafe byte[] GetBytes(SQLiteStatementHandle handle, int column)
         {
@@ -59,8 +73,12 @@ namespace Sakuno.SQLite
 
         static SQLiteResultCode BindBoolean(SQLiteStatementHandle handle, int column, bool value) =>
             Of<int>.Bind(handle, column, value ? 1 : 0);
+        static SQLiteResultCode BindByte(SQLiteStatementHandle handle, int column, byte value) =>
+            Of<int>.Bind(handle, column, value);
         static SQLiteResultCode BindInt16(SQLiteStatementHandle handle, int column, short value) =>
             Of<int>.Bind(handle, column, value);
+        static SQLiteResultCode BindSingleFloat(SQLiteStatementHandle handle, int column, float value) =>
+            Of<double>.Bind(handle, column, value);
         static SQLiteResultCode BindBytes(SQLiteStatementHandle handle, int index, byte[] value) =>
             SQLiteNativeMethods.sqlite3_bind_blob(handle, index, value, value.Length, IntPtr.Zero);
 
