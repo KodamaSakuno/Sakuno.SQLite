@@ -118,6 +118,12 @@ namespace Sakuno.SQLite
                 statement.Bind(parameter, value);
         }
 
+        public void Bind(string parameter, object value)
+        {
+            foreach (var statement in _statements)
+                statement.Bind(parameter, value);
+        }
+
         public void ClearBindings()
         {
             foreach (var statement in _statements)

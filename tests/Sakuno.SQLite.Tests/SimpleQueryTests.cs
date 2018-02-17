@@ -58,5 +58,21 @@ namespace Sakuno.SQLite.Tests
             Assert.Equal(1, _database.Changes);
             Assert.Equal(3, _database.TotalChanges);
         }
+
+        [Fact]
+        public void SelectSingleColumnNonGeneric()
+        {
+            Assert.Null(_database.Execute<object>("SELECT NULL;"));
+
+            Assert.Equal(1234L, _database.Execute<object>("SELECT 1234;"));
+
+            Assert.Equal(9223372036854775807, _database.Execute<object>("SELECT 9223372036854775807;"));
+
+            Assert.Equal(13.14, _database.Execute<object>("SELECT 13.14;"));
+
+            Assert.Equal(new byte[] { 0, 1, 2, 3 }, _database.Execute<object>("SELECT x'00010203';"));
+
+            Assert.Equal("test", _database.Execute<object>("SELECT 'test';"));
+        }
     }
 }

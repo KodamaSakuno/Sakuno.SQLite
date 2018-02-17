@@ -21,6 +21,8 @@ namespace Sakuno.SQLite
             Of<uint>.Get = OfCast<uint, int>.Get;
             Of<ulong>.Get = OfCast<ulong, long>.Get;
 
+            Of<object>.Get = GetNonGeneric;
+
             Of<int>.Bind = SQLiteNativeMethods.sqlite3_bind_int;
             Of<long>.Bind = SQLiteNativeMethods.sqlite3_bind_int64;
             Of<double>.Bind = SQLiteNativeMethods.sqlite3_bind_double;
@@ -34,6 +36,8 @@ namespace Sakuno.SQLite
             Of<ushort>.Bind = OfCast<ushort, short>.Bind;
             Of<uint>.Bind = OfCast<uint, int>.Bind;
             Of<ulong>.Bind = OfCast<ulong, long>.Bind;
+
+            Of<object>.Bind = BindNonGeneric;
         }
 
         static bool GetBoolean(SQLiteStatementHandle handle, int column) => Of<int>.Get(handle, column) != 0;
@@ -54,6 +58,31 @@ namespace Sakuno.SQLite
                 UnsafeOperations.CopyMemory((void*)bytes, buffer, length);
 
             return result;
+        }
+
+        static object GetNonGeneric(SQLiteStatementHandle handle, int column)
+        {
+            var type = SQLiteNativeMethods.sqlite3_column_type(handle, column);
+
+            switch (type)
+            {
+                case SQLiteDatatype.Integer:
+                    return SQLiteNativeMethods.sqlite3_column_int64(handle, column);
+
+                case SQLiteDatatype.Float:
+                    return SQLiteNativeMethods.sqlite3_column_double(handle, column);
+
+                case SQLiteDatatype.Text:
+                    return SQLiteNativeMethods.sqlite3_column_text(handle, column);
+
+                case SQLiteDatatype.Blob:
+                    return GetBytes(handle, column);
+
+                case SQLiteDatatype.Null:
+                    return null;
+            }
+
+            throw new InvalidOperationException();
         }
 
         static SQLiteResultCode BindText(SQLiteStatementHandle handle, int index, string value)
@@ -81,6 +110,39 @@ namespace Sakuno.SQLite
             Of<double>.Bind(handle, column, value);
         static SQLiteResultCode BindBytes(SQLiteStatementHandle handle, int index, byte[] value) =>
             SQLiteNativeMethods.sqlite3_bind_blob(handle, index, value, value.Length, IntPtr.Zero);
+
+        static SQLiteResultCode BindNonGeneric(SQLiteStatementHandle handle, int index, object value)
+        {
+            var typeCode = Type.GetTypeCode(value.GetType());
+
+            switch (typeCode)
+            {
+                case TypeCode.Boolean:
+                    return BindBoolean(handle, index, (bool)value);
+
+                case TypeCode.Single:
+                case TypeCode.Double:
+                    return Of<double>.Bind(handle, index, Convert.ToDouble(value));
+
+                case TypeCode.Byte:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                    return Of<long>.Bind(handle, index, Convert.ToInt64(value));
+
+                case TypeCode.String:
+                    return BindText(handle, index, (string)value);
+            }
+
+            if (value is byte[] bytes)
+                return BindBytes(handle, index, bytes);
+
+            throw new NotSupportedException();
+        }
 
         public static class Of<T>
         {
