@@ -49,7 +49,16 @@ namespace Sakuno.SQLite
 
         public T Get<T>(int column)
         {
-            var call = Datatype.Of<T>.Get ?? throw new NotSupportedException();
+            var valueCall = Datatype.OfCustom<T>.FromValue;
+            if (valueCall != null)
+            {
+                var valueHandle = SQLiteNativeMethods.sqlite3_column_value(_handle, column);
+
+                using (var value = new SQLiteValue(valueHandle))
+                    return valueCall(value);
+            }
+
+            var call = Datatype.Of<T>.FromStatement ?? throw new NotSupportedException();
 
             return call(_handle, column);
         }
@@ -84,6 +93,7 @@ namespace Sakuno.SQLite
         static class Cache<T>
         {
             public static Func<SQLiteStatement, SQLiteQuery, T> Call = null;
+
         }
     }
 }

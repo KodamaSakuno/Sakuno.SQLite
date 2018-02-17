@@ -104,6 +104,27 @@ namespace Sakuno.SQLite
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
         public static extern string sqlite3_column_text(SQLiteStatementHandle pStmt, int iCol);
 
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteValueHandle sqlite3_column_value(SQLiteStatementHandle pStmt, int iCol);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr sqlite3_value_blob(SQLiteValueHandle pVal);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_value_bytes(SQLiteValueHandle pVal);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_value_int(SQLiteValueHandle pVal);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern long sqlite3_value_int64(SQLiteValueHandle pVal);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern double sqlite3_value_double(SQLiteValueHandle pVal);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
+        public static extern string sqlite3_value_text(SQLiteValueHandle pVal);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteDatatype sqlite3_value_type(SQLiteValueHandle pVal);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void sqlite3_value_free(IntPtr pVal);
+
     }
 }
 #pragma warning restore IDE1006

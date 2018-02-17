@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Sakuno.SQLite
@@ -74,5 +75,7 @@ namespace Sakuno.SQLite
 
         public void Execute(string sql) => CreateQuery(sql).Execute();
         public T Execute<T>(string sql) => CreateQuery(sql).Execute<T>();
+
+        public static void RegisterDatatype<T>(ICustomDatatype<T> dataType) => Datatype.OfCustom<T>.Register(dataType);
     }
 }

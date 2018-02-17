@@ -111,6 +111,12 @@ namespace Sakuno.SQLite
 
         public void Bind<T>(string parameter, T value)
         {
+            if (Datatype.OfCustom<T>.FromValue != null)
+            {
+                Bind(parameter, value, Datatype.OfCustom<T>.DefaultDatatype);
+                return;
+            }
+
             if (Datatype.Of<T>.Bind == null)
                 throw new NotSupportedException();
 
@@ -122,6 +128,36 @@ namespace Sakuno.SQLite
         {
             foreach (var statement in _statements)
                 statement.Bind(parameter, value);
+        }
+
+        public void Bind<T>(string parameter, T value, SQLiteDatatype underlyingDatatype)
+        {
+            switch (underlyingDatatype)
+            {
+                case SQLiteDatatype.Integer:
+                    Bind<T, long>(parameter, value);
+                    break;
+
+                case SQLiteDatatype.Float:
+                    Bind<T, double>(parameter, value);
+                    break;
+
+                case SQLiteDatatype.Text:
+                    Bind<T, string>(parameter, value);
+                    break;
+
+                case SQLiteDatatype.Blob:
+                    Bind<T, byte[]>(parameter, value);
+                    break;
+
+                default: throw new ArgumentException(nameof(underlyingDatatype));
+            }
+
+        }
+        void Bind<T, TUnderlying>(string parameter, T value)
+        {
+            foreach (var statement in _statements)
+                statement.Bind(parameter, Datatype.OfCustom<T>.As<TUnderlying>.Get(value));
         }
 
         public void ClearBindings()
