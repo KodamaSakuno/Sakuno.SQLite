@@ -9,6 +9,10 @@ namespace Sakuno.SQLite
 
         public SQLiteValueHandle() : base(IntPtr.Zero) { }
 
+        protected override bool ReleaseHandle() => true;
+    }
+    class SQLiteProtectedValueHandle : SQLiteValueHandle
+    {
         protected override bool ReleaseHandle()
         {
             SQLiteNativeMethods.sqlite3_value_free(handle);
