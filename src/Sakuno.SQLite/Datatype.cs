@@ -81,30 +81,16 @@ namespace Sakuno.SQLite
         static unsafe ReadOnlyMemory<byte> GetReadOnlyMemory(SQLiteStatementHandle handle, int column) =>
             Of<byte[]>.FromStatement(handle, column);
 
-        static object GetNonGeneric(SQLiteStatementHandle handle, int column)
-        {
-            var type = SQLiteNativeMethods.sqlite3_column_type(handle, column);
-
-            switch (type)
+        static object GetNonGeneric(SQLiteStatementHandle handle, int column) =>
+            SQLiteNativeMethods.sqlite3_column_type(handle, column) switch
             {
-                case SQLiteDatatype.Integer:
-                    return SQLiteNativeMethods.sqlite3_column_int64(handle, column);
-
-                case SQLiteDatatype.Float:
-                    return SQLiteNativeMethods.sqlite3_column_double(handle, column);
-
-                case SQLiteDatatype.Text:
-                    return SQLiteNativeMethods.sqlite3_column_text(handle, column);
-
-                case SQLiteDatatype.Blob:
-                    return GetBytes(handle, column);
-
-                case SQLiteDatatype.Null:
-                    return null;
-            }
-
-            throw new InvalidOperationException();
-        }
+                SQLiteDatatype.Integer => SQLiteNativeMethods.sqlite3_column_int64(handle, column),
+                SQLiteDatatype.Float => SQLiteNativeMethods.sqlite3_column_double(handle, column),
+                SQLiteDatatype.Text => SQLiteNativeMethods.sqlite3_column_text(handle, column),
+                SQLiteDatatype.Blob => GetBytes(handle, column),
+                SQLiteDatatype.Null => (object)null,
+                _ => throw new InvalidOperationException(),
+            };
 
         static bool GetBoolean(SQLiteValueHandle handle) => Of<int>.FromValue(handle) != 0;
         static byte GetByte(SQLiteValueHandle handle) => (byte)Of<int>.FromValue(handle);
@@ -346,28 +332,15 @@ namespace Sakuno.SQLite
                 FromValue = FromValueCore;
             }
 
-            static T FromValueCore(SQLiteValue value)
+            static T FromValueCore(SQLiteValue value) => value.Type switch
             {
-                switch (value.Type)
-                {
-                    case SQLiteDatatype.Integer:
-                        return _fromInteger(value.Get<long>());
-
-                    case SQLiteDatatype.Float:
-                        return _fromFloat(value.Get<double>());
-
-                    case SQLiteDatatype.Text:
-                        return _fromText(value.Get<string>());
-
-                    case SQLiteDatatype.Blob:
-                        return _fromBlob(value.Get<ReadOnlyMemory<byte>>());
-
-                    case SQLiteDatatype.Null:
-                        return default;
-                }
-
-                throw new InvalidOperationException();
-            }
+                SQLiteDatatype.Integer => _fromInteger(value.Get<long>()),
+                SQLiteDatatype.Float => _fromFloat(value.Get<double>()),
+                SQLiteDatatype.Text => _fromText(value.Get<string>()),
+                SQLiteDatatype.Blob => _fromBlob(value.Get<ReadOnlyMemory<byte>>()),
+                SQLiteDatatype.Null => default,
+                _ => throw new InvalidOperationException(),
+            };
 
             public static class As<TUnderlying>
             {
