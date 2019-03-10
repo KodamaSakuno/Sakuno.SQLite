@@ -13,17 +13,19 @@ namespace Sakuno.SQLite
         {
             get
             {
-                var builder = StringBuilderCache.Acquire();
+                if (_statements.Length == 1)
+                    return _statements[0].SQL;
 
-                foreach (var statement in _statements)
+                var array = new string[_statements.Length * 2 - 1];
+                for (var i = 0; i < _statements.Length; i++)
                 {
-                    if (builder.Length > 0)
-                        builder.AppendLine();
+                    if (i > 0)
+                        array[i * 2 - 1] = Environment.NewLine;
 
-                    builder.Append(statement.SQL);
+                    array[i * 2] = _statements[i].SQL;
                 }
 
-                return builder.ToString();
+                return string.Concat(array);
             }
         }
 
@@ -45,17 +47,19 @@ namespace Sakuno.SQLite
 
         public string GetExpandedSQL()
         {
-            var builder = StringBuilderCache.Acquire();
+            if (_statements.Length == 1)
+                return _statements[0].GetExpandedSQL();
 
-            foreach (var statement in _statements)
+            var array = new string[_statements.Length * 2 - 1];
+            for (var i = 0; i < _statements.Length; i++)
             {
-                if (builder.Length > 0)
-                    builder.AppendLine();
+                if (i > 0)
+                    array[i * 2 - 1] = Environment.NewLine;
 
-                builder.Append(statement.GetExpandedSQL());
+                array[i * 2] = _statements[i].GetExpandedSQL();
             }
 
-            return builder.ToString();
+            return string.Concat(array);
         }
 
         public void Execute()
