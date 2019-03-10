@@ -54,8 +54,8 @@ namespace Sakuno.SQLite
             {
                 var valueHandle = SQLiteNativeMethods.sqlite3_column_value(_handle, column);
 
-                using (var value = new SQLiteValue(valueHandle))
-                    return valueCall(value);
+                using var value = new SQLiteValue(valueHandle);
+                return valueCall(value);
             }
 
             var call = Datatype.Of<T>.FromStatement ?? throw new NotSupportedException();

@@ -17,43 +17,40 @@ namespace Sakuno.SQLite.Tests
         [Fact]
         public void DateTimeOffsetFromTimestamp()
         {
-            using (var query = _database.CreateQuery("SELECT @timestamp;"))
-            {
-                var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            using var query = _database.CreateQuery("SELECT @timestamp;");
+            
+            var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
 
-                query.Bind("@timestamp", timestamp);
+            query.Bind("@timestamp", timestamp);
 
-                var dateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+            var dateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp);
 
-                Assert.Equal(dateTime, query.Execute<DateTimeOffset>());
-                Assert.Equal(dateTime, query.Execute<DateTimeOffset?>());
-            }
+            Assert.Equal(dateTime, query.Execute<DateTimeOffset>());
+            Assert.Equal(dateTime, query.Execute<DateTimeOffset?>());
         }
 
         [Fact]
         public void DateTimeOffsetFromNull()
         {
-            using (var query = _database.CreateQuery("SELECT NULL;"))
-            {
-                Assert.Equal(DateTimeOffset.MinValue, query.Execute<DateTimeOffset>());
-                Assert.NotEqual(DateTimeOffset.MinValue, query.Execute<DateTimeOffset?>());
-                Assert.Equal(default, query.Execute<DateTimeOffset?>());
-            }
+            using var query = _database.CreateQuery("SELECT NULL;");
+            
+            Assert.Equal(DateTimeOffset.MinValue, query.Execute<DateTimeOffset>());
+            Assert.NotEqual(DateTimeOffset.MinValue, query.Execute<DateTimeOffset?>());
+            Assert.Equal(default, query.Execute<DateTimeOffset?>());
         }
 
         [Fact]
         public void BindWithDateTimeOffset()
         {
-            using (var query = _database.CreateQuery("SELECT @timestamp;"))
-            {
-                var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
-                var dateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+            using var query = _database.CreateQuery("SELECT @timestamp;");
+            
+            var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            var dateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp);
 
-                query.Bind("@timestamp", dateTime);
+            query.Bind("@timestamp", dateTime);
 
-                Assert.Equal(dateTime, query.Execute<DateTimeOffset>());
-                Assert.Equal(dateTime, query.Execute<DateTimeOffset?>());
-            }
+            Assert.Equal(dateTime, query.Execute<DateTimeOffset>());
+            Assert.Equal(dateTime, query.Execute<DateTimeOffset?>());
         }
 
         class DateTimeOffsetDatatype : ICustomDatatype<DateTimeOffset>
