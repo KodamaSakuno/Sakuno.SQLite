@@ -53,6 +53,8 @@ namespace Sakuno.SQLite
         public static extern SQLiteResultCode sqlite3_bind_double(SQLiteStatementHandle pStmt, int i, double iValue);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern SQLiteResultCode sqlite3_bind_blob(SQLiteStatementHandle pStmt, int i, byte[] zData, int nData, IntPtr xDel);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SQLiteResultCode sqlite3_bind_blob(SQLiteStatementHandle pStmt, int i, in byte zData, int nData, IntPtr xDel);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern SQLiteResultCode sqlite3_clear_bindings(SQLiteStatementHandle pStmt);

@@ -1,4 +1,6 @@
-﻿namespace Sakuno.SQLite
+﻿using System;
+
+namespace Sakuno.SQLite
 {
     public interface ICustomDatatype<T>
     {
@@ -12,11 +14,11 @@
         T FromInteger(long value);
         T FromFloat(double value);
         T FromText(string value);
-        T FromBlob(byte[] value);
+        T FromBlob(ReadOnlyMemory<byte> value);
 
         long ToInteger(T value);
         double ToFloat(T value);
         string ToText(T value);
-        byte[] ToBlob(T value);
+        ReadOnlyMemory<byte> ToBlob(T value);
     }
 }

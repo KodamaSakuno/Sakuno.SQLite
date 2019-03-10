@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Sakuno.SQLite
 {
@@ -16,6 +17,7 @@ namespace Sakuno.SQLite
             Of<byte>.FromStatement = GetByte;
             Of<short>.FromStatement = GetInt16;
             Of<byte[]>.FromStatement = GetBytes;
+            Of<ReadOnlyMemory<byte>>.FromStatement = GetReadOnlyMemory;
             Of<float>.FromStatement = GetSingleFloat;
             Of<sbyte>.FromStatement = OfCast<sbyte, byte>.FromStatement;
             Of<ushort>.FromStatement = OfCast<ushort, short>.FromStatement;
@@ -33,6 +35,7 @@ namespace Sakuno.SQLite
             Of<short>.FromValue = GetInt16;
             Of<float>.FromValue = GetSingleFloat;
             Of<byte[]>.FromValue = GetBytes;
+            Of<ReadOnlyMemory<byte>>.FromValue = GetReadOnlyMemory;
             Of<sbyte>.FromValue = OfCast<sbyte, byte>.FromValue;
             Of<ushort>.FromValue = OfCast<ushort, short>.FromValue;
             Of<uint>.FromValue = OfCast<uint, int>.FromValue;
@@ -46,6 +49,7 @@ namespace Sakuno.SQLite
             Of<byte>.Bind = BindByte;
             Of<short>.Bind = BindInt16;
             Of<byte[]>.Bind = BindBytes;
+            Of<ReadOnlyMemory<byte>>.Bind = BindReadOnlyMemory;
             Of<float>.Bind = BindSingleFloat;
             Of<sbyte>.Bind = OfCast<sbyte, byte>.Bind;
             Of<ushort>.Bind = OfCast<ushort, short>.Bind;
@@ -74,6 +78,8 @@ namespace Sakuno.SQLite
 
             return result;
         }
+        static unsafe ReadOnlyMemory<byte> GetReadOnlyMemory(SQLiteStatementHandle handle, int column) =>
+            Of<byte[]>.FromStatement(handle, column);
 
         static object GetNonGeneric(SQLiteStatementHandle handle, int column)
         {
@@ -119,6 +125,8 @@ namespace Sakuno.SQLite
 
             return result;
         }
+        static unsafe ReadOnlyMemory<byte> GetReadOnlyMemory(SQLiteValueHandle handle) =>
+            Of<byte[]>.FromValue(handle);
 
         static SQLiteResultCode BindText(SQLiteStatementHandle handle, int index, string value)
         {
@@ -145,6 +153,8 @@ namespace Sakuno.SQLite
             Of<double>.Bind(handle, column, value);
         static SQLiteResultCode BindBytes(SQLiteStatementHandle handle, int index, byte[] value) =>
             SQLiteNativeMethods.sqlite3_bind_blob(handle, index, value, value.Length, IntPtr.Zero);
+        static SQLiteResultCode BindReadOnlyMemory(SQLiteStatementHandle handle, int index, ReadOnlyMemory<byte> value) =>
+            SQLiteNativeMethods.sqlite3_bind_blob(handle, index, MemoryMarshal.GetReference(value.Span), value.Length, IntPtr.Zero);
 
         static SQLiteResultCode BindNonGeneric(SQLiteStatementHandle handle, int index, object value)
         {
@@ -285,7 +295,7 @@ namespace Sakuno.SQLite
             static Func<long, T> _fromInteger;
             static Func<double, T> _fromFloat;
             static Func<string, T> _fromText;
-            static Func<byte[], T> _fromBlob;
+            static Func<ReadOnlyMemory<byte>, T> _fromBlob;
 
             public static SQLiteDatatype DefaultDatatype;
 
@@ -328,7 +338,7 @@ namespace Sakuno.SQLite
                 if (datatype.SupportBlob)
                 {
                     _fromBlob = datatype.FromBlob;
-                    As<byte[]>.Get = datatype.ToBlob;
+                    As<ReadOnlyMemory<byte>>.Get = datatype.ToBlob;
                 }
 
                 DefaultDatatype = datatype.DefaultDatatype;
@@ -350,7 +360,7 @@ namespace Sakuno.SQLite
                         return _fromText(value.Get<string>());
 
                     case SQLiteDatatype.Blob:
-                        return _fromBlob(value.Get<byte[]>());
+                        return _fromBlob(value.Get<ReadOnlyMemory<byte>>());
 
                     case SQLiteDatatype.Null:
                         return default;

@@ -151,7 +151,7 @@ namespace Sakuno.SQLite
                     break;
 
                 case SQLiteDatatype.Blob:
-                    Bind<T, byte[]>(parameter, value);
+                    Bind<T, ReadOnlyMemory<byte>>(parameter, value);
                     break;
 
                 default: throw new ArgumentException(nameof(underlyingDatatype));
