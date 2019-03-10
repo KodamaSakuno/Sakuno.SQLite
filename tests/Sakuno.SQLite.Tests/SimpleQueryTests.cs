@@ -15,10 +15,13 @@ namespace Sakuno.SQLite.Tests
         public void SelectSingleColumn()
         {
             Assert.Equal(1234, _database.Execute<int>("SELECT 1234;"));
+            Assert.Equal(1234, _database.Execute<int?>("SELECT 1234;"));
 
             Assert.Equal(9223372036854775807, _database.Execute<long>("SELECT 9223372036854775807;"));
+            Assert.Equal(9223372036854775807, _database.Execute<long?>("SELECT 9223372036854775807;"));
 
             Assert.Equal(13.14, _database.Execute<double>("SELECT 13.14;"));
+            Assert.Equal(13.14, _database.Execute<double?>("SELECT 13.14;"));
 
             Assert.Equal(new byte[] { 0, 1, 2, 3 }, _database.Execute<byte[]>("SELECT x'00010203';"));
 
@@ -31,10 +34,13 @@ namespace Sakuno.SQLite.Tests
             using var query = _database.CreateQuery("SELECT 1234, 9223372036854775807, 13.14, x'00010203', 'test';");
             
             Assert.Equal(1234, query.Execute<int>(0));
+            Assert.Equal(1234, query.Execute<int?>(0));
 
             Assert.Equal(9223372036854775807, query.Execute<long>(1));
+            Assert.Equal(9223372036854775807, query.Execute<long?>(1));
 
             Assert.Equal(13.14, query.Execute<double>(2));
+            Assert.Equal(13.14, query.Execute<double?>(2));
 
             Assert.Equal(new byte[] { 0, 1, 2, 3 }, query.Execute<byte[]>(3));
 

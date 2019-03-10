@@ -296,11 +296,15 @@ namespace Sakuno.SQLite
                 if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     var typeArgument = type.GenericTypeArguments[0];
-                    var cacheType = typeof(OfCustomNullable<>).MakeGenericType(typeArgument);
 
-                    var field = cacheType.GetField(nameof(FromValue));
+                    var predefinedTypeCache = typeof(Of<>).MakeGenericType(typeArgument);
+                    if (predefinedTypeCache.GetField(nameof(FromValue)).GetValue(null) != null)
+                        return;
 
-                    FromValue = (Func<SQLiteValue, T>)field?.GetValue(null);
+                    var nullableCacheType = typeof(OfCustomNullable<>).MakeGenericType(typeArgument);
+                    var field = nullableCacheType.GetField(nameof(FromValue));
+
+                    FromValue = (Func<SQLiteValue, T>)field.GetValue(null);
                 }
             }
 
