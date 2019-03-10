@@ -1,12 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
-    <RootNamespace>Sakuno.SQLite</RootNamespace>
-    <AssemblyName>Sakuno.SQLite</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>$(SolutionDir)artifacts\$(Configuration)\</OutputPath>
     <PackageId>Sakuno.SQLite</PackageId>
@@ -15,9 +10,9 @@
     <Description>Sakuno's SQLite wrapper</Description>
     <Product>Sakuno.SQLite</Product>
     <Company>Kodama Sakuno</Company>
-    <Copyright>Copyright © 2018 Kodama Sakuno</Copyright>
+    <Copyright>Copyright © 2019 Kodama Sakuno</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseUrl>https://github.com/KodamaSakuno/Sakuno.SQLite/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/KodamaSakuno/Sakuno.SQLite</PackageProjectUrl>
   </PropertyGroup>
 
