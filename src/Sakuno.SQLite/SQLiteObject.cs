@@ -8,6 +8,8 @@ namespace Sakuno.SQLite
         volatile int _isDisposed;
         public bool IsClosed => _isDisposed != 0;
 
+        internal protected SQLiteObject() { }
+
         ~SQLiteObject() => Dispose(false);
         public void Dispose()
         {

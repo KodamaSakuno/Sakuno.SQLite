@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Sakuno.SQLite
 {
-    public class SQLiteStatement : SQLiteObject
+    public sealed class SQLiteStatement : SQLiteObject
     {
         SQLiteDatabase _database;
 

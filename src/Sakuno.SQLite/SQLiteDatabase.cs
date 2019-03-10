@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Sakuno.SQLite
 {
-    public class SQLiteDatabase : SQLiteObject
+    public sealed class SQLiteDatabase : SQLiteObject
     {
         SQLiteConnectionHandle _handle;
 

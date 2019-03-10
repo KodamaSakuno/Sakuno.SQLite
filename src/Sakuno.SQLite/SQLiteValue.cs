@@ -2,7 +2,7 @@
 
 namespace Sakuno.SQLite
 {
-    public class SQLiteValue : SQLiteObject
+    public sealed class SQLiteValue : SQLiteObject
     {
         SQLiteValueHandle _handle;
 
