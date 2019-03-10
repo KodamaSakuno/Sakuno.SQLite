@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Sakuno.SQLite
 {
@@ -69,7 +70,7 @@ namespace Sakuno.SQLite
             var result = new byte[length];
 
             fixed (byte* buffer = result)
-                UnsafeOperations.CopyMemory((void*)bytes, buffer, length);
+                Unsafe.CopyBlock(buffer, (void*)bytes, (uint)length);
 
             return result;
         }
@@ -114,7 +115,7 @@ namespace Sakuno.SQLite
             var result = new byte[length];
 
             fixed (byte* buffer = result)
-                UnsafeOperations.CopyMemory((void*)bytes, buffer, length);
+                Unsafe.CopyBlock(buffer, (void*)bytes, (uint)length);
 
             return result;
         }
@@ -261,13 +262,20 @@ namespace Sakuno.SQLite
 
             public static readonly Func<SQLiteStatementHandle, int, T, SQLiteResultCode> Bind = BindCore;
 
-            static T FromStatementCore(SQLiteStatementHandle handle, int column) =>
-                UnsafeOperations.As<TUnderlying, T>(Of<TUnderlying>.FromStatement(handle, column));
-            static T FromValueCore(SQLiteValueHandle handle) =>
-                UnsafeOperations.As<TUnderlying, T>(Of<TUnderlying>.FromValue(handle));
+            static T FromStatementCore(SQLiteStatementHandle handle, int column)
+            {
+                var value = Of<TUnderlying>.FromStatement(handle, column);
+                return Unsafe.As<TUnderlying, T>(ref value);
+            }
+
+            static T FromValueCore(SQLiteValueHandle handle)
+            {
+                var value = Of<TUnderlying>.FromValue(handle);
+                return Unsafe.As<TUnderlying, T>(ref value);
+            }
 
             static SQLiteResultCode BindCore(SQLiteStatementHandle handle, int column, T value) =>
-                Of<TUnderlying>.Bind(handle, column, UnsafeOperations.As<T, TUnderlying>(value));
+                Of<TUnderlying>.Bind(handle, column, Unsafe.As<T, TUnderlying>(ref value));
         }
 
         public static class OfCustom<T>
