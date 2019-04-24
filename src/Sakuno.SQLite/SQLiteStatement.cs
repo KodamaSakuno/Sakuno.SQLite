@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Sakuno.SQLite
@@ -16,6 +16,7 @@ namespace Sakuno.SQLite
         SortedList<string, int> _parameterIndexes;
 
         public int ColumnCount => SQLiteNativeMethods.sqlite3_column_count(_handle);
+        public int DataCount => SQLiteNativeMethods.sqlite3_data_count(_handle);
 
         internal SQLiteStatement(SQLiteDatabase database, SQLiteStatementHandle handle)
         {

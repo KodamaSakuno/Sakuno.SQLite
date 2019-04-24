@@ -1,4 +1,4 @@
-﻿#pragma warning disable IDE1006
+#pragma warning disable IDE1006
 
 using System;
 using System.Runtime.InteropServices;
@@ -81,6 +81,9 @@ namespace Sakuno.SQLite
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
         public static extern string sqlite3_column_name(SQLiteStatementHandle pStmt, int iCol);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sqlite3_data_count(SQLiteStatementHandle pStmt);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8StringConstantMarshaler))]
