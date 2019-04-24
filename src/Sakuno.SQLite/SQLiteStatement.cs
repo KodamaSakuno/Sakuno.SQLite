@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Sakuno.SQLite
@@ -27,7 +27,7 @@ namespace Sakuno.SQLite
             if (parameterCount == 0)
                 return;
 
-            _parameterIndexes = new SortedList<string, int>(StringComparer.Ordinal);
+            _parameterIndexes = new SortedList<string, int>(parameterCount, StringComparer.Ordinal);
 
             for (var i = 1; i <= parameterCount; i++)
             {
@@ -44,9 +44,9 @@ namespace Sakuno.SQLite
 
         public string GetExpandedSQL() => SQLiteNativeMethods.sqlite3_expanded_sql(_handle);
 
-        public SQLiteResultCode Execute() => SQLiteNativeMethods.sqlite3_step(_handle);
+        internal SQLiteResultCode Execute() => SQLiteNativeMethods.sqlite3_step(_handle);
 
-        public void Reset() => SQLiteNativeMethods.sqlite3_reset(_handle);
+        internal void Reset() => SQLiteNativeMethods.sqlite3_reset(_handle);
 
         public T Get<T>(int column)
         {
@@ -79,7 +79,7 @@ namespace Sakuno.SQLite
             if (resultCode != SQLiteResultCode.OK)
                 throw new SQLiteException(resultCode);
         }
-        public void Bind<T>(string parameter, T value)
+        internal void Bind<T>(string parameter, T value)
         {
             if (_parameterIndexes == null || !_parameterIndexes.TryGetValue(parameter, out var index))
                 return;
@@ -89,7 +89,7 @@ namespace Sakuno.SQLite
                 throw new SQLiteException(resultCode);
         }
 
-        public void ClearBindings() => SQLiteNativeMethods.sqlite3_clear_bindings(_handle);
+        internal void ClearBindings() => SQLiteNativeMethods.sqlite3_clear_bindings(_handle);
 
         static class Cache<T>
         {
