@@ -1,4 +1,6 @@
-﻿using System;
+#pragma warning disable IDE0060
+
+using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -77,3 +79,4 @@ namespace Sakuno.SQLite
         public int GetNativeDataSize() => -1;
     }
 }
+#pragma warning restore IDE0060
