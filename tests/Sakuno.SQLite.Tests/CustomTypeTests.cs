@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using Xunit;
 
@@ -106,6 +106,36 @@ namespace Sakuno.SQLite.Tests
 
             Assert.Equal(guidBlob, MemoryMarshal.ToEnumerable(query.Execute<ReadOnlyMemory<byte>>()));
             Assert.Equal(guidBlob, MemoryMarshal.ToEnumerable(query.Execute<ReadOnlyMemory<byte>?>().GetValueOrDefault()));
+        }
+
+        [Fact]
+        public void BindWithNullableGuid()
+        {
+            using var query = _database.CreateQuery("SELECT @guid;");
+
+            Guid? guid = Guid.NewGuid();
+            var guidBlob = guid?.ToByteArray();
+
+            query.Bind("@guid", guid);
+
+            Assert.Equal(guid, query.Execute<Guid>());
+            Assert.Equal(guid, query.Execute<Guid?>());
+            Assert.Equal(guidBlob, query.Execute<byte[]>());
+
+            Assert.Equal(guidBlob, MemoryMarshal.ToEnumerable(query.Execute<ReadOnlyMemory<byte>>()));
+            Assert.Equal(guidBlob, MemoryMarshal.ToEnumerable(query.Execute<ReadOnlyMemory<byte>?>().GetValueOrDefault()));
+        }
+        [Fact]
+        public void BindWithNullableGuidInWrongWay()
+        {
+            using var query = _database.CreateQuery("SELECT @guid;");
+
+            var guid = Guid.NewGuid();
+            var guidBlob = guid.ToByteArray();
+
+            var exception = Record.Exception(() => query.Bind<Guid?>("@guid", guid));
+
+            Assert.IsType<NotSupportedException>(exception);
         }
 
         class DateTimeOffsetDatatype : ICustomDatatype<DateTimeOffset>

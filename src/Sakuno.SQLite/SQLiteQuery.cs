@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Sakuno.SQLite
@@ -117,7 +117,15 @@ namespace Sakuno.SQLite
         {
             if (Datatype.OfCustom<T>.FromValue != null)
             {
-                Bind(parameter, value, Datatype.OfCustom<T>.DefaultDatatype);
+                var defaultDatatype = Datatype.OfCustom<T>.DefaultDatatype;
+                if (defaultDatatype == 0)
+                {
+                    var underlyingType = Nullable.GetUnderlyingType(typeof(T));
+
+                    throw new NotSupportedException($"Don't call Bind<{underlyingType.Name}?>() directly, use Bind<{underlyingType.Name}>() with nullable value instead.");
+                }
+
+                Bind(parameter, value, defaultDatatype);
                 return;
             }
 
@@ -126,6 +134,18 @@ namespace Sakuno.SQLite
 
             foreach (var statement in _statements)
                 statement.Bind(parameter, value);
+        }
+
+        public void Bind<T>(string parameter, T? nullableValue) where T : struct
+        {
+            if (nullableValue is T value)
+            {
+                Bind(parameter, value);
+                return;
+            }
+
+            foreach (var statement in _statements)
+                statement.BindNull(parameter);
         }
 
         public void Bind(string parameter, object value)
