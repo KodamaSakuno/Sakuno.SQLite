@@ -32,7 +32,7 @@ namespace Sakuno.SQLite.Tests
         public void SelectMultipleColumns()
         {
             using var query = _database.CreateQuery("SELECT 1234, 9223372036854775807, 13.14, x'00010203', 'test';");
-            
+
             Assert.Equal(1234, query.Execute<int>(0));
             Assert.Equal(1234, query.Execute<int?>(0));
 

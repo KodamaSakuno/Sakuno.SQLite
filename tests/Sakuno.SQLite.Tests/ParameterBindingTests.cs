@@ -15,7 +15,7 @@ namespace Sakuno.SQLite.Tests
         public void SimpleType()
         {
             using var query = _database.CreateQuery("SELECT @first, @second, @third, @fourth, @fifth;");
-            
+
             query.Bind("@first", 1234);
             query.Bind("@second", 9223372036854775807);
             query.Bind("@third", 13.14);
@@ -38,7 +38,7 @@ namespace Sakuno.SQLite.Tests
         public void NonGeneric()
         {
             using var query = _database.CreateQuery("SELECT @first, @second, @third, @fourth, @fifth;");
-            
+
             query.Bind("@first", (object)1234);
             query.Bind("@second", (object)9223372036854775807);
             query.Bind("@third", (object)13.14);

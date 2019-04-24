@@ -20,7 +20,7 @@ namespace Sakuno.SQLite.Tests
         public void DateTimeOffsetFromTimestamp()
         {
             using var query = _database.CreateQuery("SELECT @timestamp;");
-            
+
             var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
 
             query.Bind("@timestamp", timestamp);
@@ -35,7 +35,7 @@ namespace Sakuno.SQLite.Tests
         public void DateTimeOffsetFromNull()
         {
             using var query = _database.CreateQuery("SELECT NULL;");
-            
+
             Assert.Equal(DateTimeOffset.MinValue, query.Execute<DateTimeOffset>());
             Assert.NotEqual(DateTimeOffset.MinValue, query.Execute<DateTimeOffset?>());
             Assert.Equal(default, query.Execute<DateTimeOffset?>());
@@ -45,7 +45,7 @@ namespace Sakuno.SQLite.Tests
         public void BindWithDateTimeOffset()
         {
             using var query = _database.CreateQuery("SELECT @timestamp;");
-            
+
             var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             var dateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp);
 
@@ -59,7 +59,7 @@ namespace Sakuno.SQLite.Tests
         public void GuidFromText()
         {
             using var query = _database.CreateQuery("SELECT @guid;");
-            
+
             var guid = Guid.NewGuid();
 
             query.Bind("@guid", guid.ToString());
@@ -71,7 +71,7 @@ namespace Sakuno.SQLite.Tests
         public void GuidFromBlob()
         {
             using var query = _database.CreateQuery("SELECT @guid;");
-            
+
             var guid = Guid.NewGuid();
 
             query.Bind("@guid", guid.ToByteArray());
@@ -84,7 +84,7 @@ namespace Sakuno.SQLite.Tests
         public void GuidFromNull()
         {
             using var query = _database.CreateQuery("SELECT NULL;");
-            
+
             Assert.Equal(Guid.Empty, query.Execute<Guid>());
             Assert.NotEqual(Guid.Empty, query.Execute<Guid?>());
             Assert.Equal(default, query.Execute<Guid?>());
