@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using Xunit;
 
@@ -137,7 +137,11 @@ namespace Sakuno.SQLite.Tests
 
             public SQLiteDatatype DefaultDatatype => SQLiteDatatype.Blob;
 
+#if !NET461
             public Guid FromBlob(ReadOnlyMemory<byte> value) => new Guid(value.Span);
+#else
+            public Guid FromBlob(ReadOnlyMemory<byte> value) => new Guid(value.ToArray());
+#endif
             public Guid FromText(string value) => Guid.Parse(value);
 
             public ReadOnlyMemory<byte> ToBlob(Guid value) => value.ToByteArray();

@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.1;netstandard2.0;net461</TargetFrameworks>
     <OutputPath>$(SolutionDir)artifacts\$(Configuration)\</OutputPath>
     <PackageId>Sakuno.SQLite</PackageId>
     <Version>0.1</Version>
@@ -16,8 +16,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Memory" Version="4.5.2" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.1' ">
+    <PackageReference Include="System.Memory" Version="4.5.2" />
   </ItemGroup>
 
 </Project>
