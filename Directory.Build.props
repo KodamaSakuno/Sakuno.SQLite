@@ -6,8 +6,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
     <LangVersion>8.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
 </Project>
