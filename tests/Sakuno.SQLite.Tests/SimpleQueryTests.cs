@@ -1,10 +1,13 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace Sakuno.SQLite.Tests
 {
     public class SimpleQueryTests : IClassFixture<MemoryDatabaseFixture>
     {
         SQLiteDatabase _database;
+
+        byte[] _bytes = new byte[] { 0, 1, 2, 3 };
 
         public SimpleQueryTests(MemoryDatabaseFixture fixture)
         {
@@ -23,7 +26,10 @@ namespace Sakuno.SQLite.Tests
             Assert.Equal(13.14, _database.Execute<double>("SELECT 13.14;"));
             Assert.Equal(13.14, _database.Execute<double?>("SELECT 13.14;"));
 
-            Assert.Equal(new byte[] { 0, 1, 2, 3 }, _database.Execute<byte[]>("SELECT x'00010203';"));
+            Assert.Equal(_bytes, _database.Execute<byte[]>("SELECT x'00010203';"));
+
+            var span = _database.Execute<BlobInfo>("SELECT x'00010203';").GetSpan();
+            Assert.True(MemoryExtensions.SequenceEqual(_bytes, span));
 
             Assert.Equal("test", _database.Execute<string>("SELECT 'test';"));
         }
@@ -42,7 +48,10 @@ namespace Sakuno.SQLite.Tests
             Assert.Equal(13.14, query.Execute<double>(2));
             Assert.Equal(13.14, query.Execute<double?>(2));
 
-            Assert.Equal(new byte[] { 0, 1, 2, 3 }, query.Execute<byte[]>(3));
+            Assert.Equal(_bytes, query.Execute<byte[]>(3));
+
+            var span = query.Execute<BlobInfo>(3).GetSpan();
+            Assert.True(MemoryExtensions.SequenceEqual(_bytes, span));
 
             Assert.Equal("test", query.Execute<string>(4));
         }
@@ -75,7 +84,7 @@ namespace Sakuno.SQLite.Tests
 
             Assert.Equal(13.14, _database.Execute<object>("SELECT 13.14;"));
 
-            Assert.Equal(new byte[] { 0, 1, 2, 3 }, _database.Execute<object>("SELECT x'00010203';"));
+            Assert.Equal(_bytes, _database.Execute<object>("SELECT x'00010203';"));
 
             Assert.Equal("test", _database.Execute<object>("SELECT 'test';"));
         }

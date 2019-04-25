@@ -73,11 +73,18 @@ namespace Sakuno.SQLite.Tests
             using var query = _database.CreateQuery("SELECT @guid;");
 
             var guid = Guid.NewGuid();
+            var guidBlob = guid.ToByteArray();
 
-            query.Bind("@guid", guid.ToByteArray());
+            query.Bind("@guid", guidBlob);
 
             Assert.Equal(guid, query.Execute<Guid>());
             Assert.Equal(guid, query.Execute<Guid?>());
+
+            var span = query.Execute<BlobInfo>().GetSpan();
+            Assert.True(MemoryExtensions.SequenceEqual(guidBlob, span));
+
+            span = query.Execute<BlobInfo?>().GetValueOrDefault().GetSpan();
+            Assert.True(MemoryExtensions.SequenceEqual(guidBlob, span));
         }
 
         [Fact]
@@ -106,6 +113,12 @@ namespace Sakuno.SQLite.Tests
 
             Assert.Equal(guidBlob, MemoryMarshal.ToEnumerable(query.Execute<ReadOnlyMemory<byte>>()));
             Assert.Equal(guidBlob, MemoryMarshal.ToEnumerable(query.Execute<ReadOnlyMemory<byte>?>().GetValueOrDefault()));
+
+            var span = query.Execute<BlobInfo>().GetSpan();
+            Assert.True(MemoryExtensions.SequenceEqual(guidBlob, span));
+
+            span = query.Execute<BlobInfo?>().GetValueOrDefault().GetSpan();
+            Assert.True(MemoryExtensions.SequenceEqual(guidBlob, span));
         }
 
         [Fact]
@@ -124,6 +137,12 @@ namespace Sakuno.SQLite.Tests
 
             Assert.Equal(guidBlob, MemoryMarshal.ToEnumerable(query.Execute<ReadOnlyMemory<byte>>()));
             Assert.Equal(guidBlob, MemoryMarshal.ToEnumerable(query.Execute<ReadOnlyMemory<byte>?>().GetValueOrDefault()));
+
+            var span = query.Execute<BlobInfo>().GetSpan();
+            Assert.True(MemoryExtensions.SequenceEqual(guidBlob, span));
+
+            span = query.Execute<BlobInfo?>().GetValueOrDefault().GetSpan();
+            Assert.True(MemoryExtensions.SequenceEqual(guidBlob, span));
         }
         [Fact]
         public void BindWithNullableGuidInWrongWay()

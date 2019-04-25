@@ -25,6 +25,8 @@ namespace Sakuno.SQLite
             Of<uint>.FromStatement = OfCast<uint, int>.FromStatement;
             Of<ulong>.FromStatement = OfCast<ulong, long>.FromStatement;
 
+            Of<BlobInfo>.FromStatement = GetBlobInfo;
+
             Of<object>.FromStatement = GetNonGeneric;
 
             Of<int>.FromValue = SQLiteNativeMethods.sqlite3_value_int;
@@ -41,6 +43,8 @@ namespace Sakuno.SQLite
             Of<ushort>.FromValue = OfCast<ushort, short>.FromValue;
             Of<uint>.FromValue = OfCast<uint, int>.FromValue;
             Of<ulong>.FromValue = OfCast<ulong, long>.FromValue;
+
+            Of<BlobInfo>.FromValue = GetBlobInfo;
 
             Of<int>.Bind = SQLiteNativeMethods.sqlite3_bind_int;
             Of<long>.Bind = SQLiteNativeMethods.sqlite3_bind_int64;
@@ -93,6 +97,17 @@ namespace Sakuno.SQLite
             return Encoding.UTF8.GetString(bytes, length);
         }
 
+        static unsafe BlobInfo GetBlobInfo(SQLiteStatementHandle handle, int column)
+        {
+            var bytes = SQLiteNativeMethods.sqlite3_column_blob(handle, column);
+            if (bytes == null)
+                return default;
+
+            var length = SQLiteNativeMethods.sqlite3_column_bytes(handle, column);
+
+            return new BlobInfo(bytes, length);
+        }
+
         static object GetNonGeneric(SQLiteStatementHandle handle, int column) =>
             SQLiteNativeMethods.sqlite3_column_type(handle, column) switch
             {
@@ -135,6 +150,17 @@ namespace Sakuno.SQLite
             var length = SQLiteNativeMethods.sqlite3_value_bytes(handle);
 
             return Encoding.UTF8.GetString(bytes, length);
+        }
+
+        static unsafe BlobInfo GetBlobInfo(SQLiteValueHandle handle)
+        {
+            var bytes = SQLiteNativeMethods.sqlite3_value_blob(handle);
+            if (bytes == null)
+                return default;
+
+            var length = SQLiteNativeMethods.sqlite3_value_bytes(handle);
+
+            return new BlobInfo(bytes, length);
         }
 
         static SQLiteResultCode BindText(SQLiteStatementHandle handle, int index, string value)
