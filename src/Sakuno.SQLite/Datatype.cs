@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Sakuno.SQLite
 {
@@ -12,13 +13,13 @@ namespace Sakuno.SQLite
             Of<int>.FromStatement = SQLiteNativeMethods.sqlite3_column_int;
             Of<long>.FromStatement = SQLiteNativeMethods.sqlite3_column_int64;
             Of<double>.FromStatement = SQLiteNativeMethods.sqlite3_column_double;
-            Of<string>.FromStatement = SQLiteNativeMethods.sqlite3_column_text;
             Of<bool>.FromStatement = GetBoolean;
             Of<byte>.FromStatement = GetByte;
             Of<short>.FromStatement = GetInt16;
+            Of<float>.FromStatement = GetSingleFloat;
             Of<byte[]>.FromStatement = GetBytes;
             Of<ReadOnlyMemory<byte>>.FromStatement = GetReadOnlyMemory;
-            Of<float>.FromStatement = GetSingleFloat;
+            Of<string>.FromStatement = GetString;
             Of<sbyte>.FromStatement = OfCast<sbyte, byte>.FromStatement;
             Of<ushort>.FromStatement = OfCast<ushort, short>.FromStatement;
             Of<uint>.FromStatement = OfCast<uint, int>.FromStatement;
@@ -29,13 +30,13 @@ namespace Sakuno.SQLite
             Of<int>.FromValue = SQLiteNativeMethods.sqlite3_value_int;
             Of<long>.FromValue = SQLiteNativeMethods.sqlite3_value_int64;
             Of<double>.FromValue = SQLiteNativeMethods.sqlite3_value_double;
-            Of<string>.FromValue = SQLiteNativeMethods.sqlite3_value_text;
             Of<bool>.FromValue = GetBoolean;
             Of<byte>.FromValue = GetByte;
             Of<short>.FromValue = GetInt16;
             Of<float>.FromValue = GetSingleFloat;
             Of<byte[]>.FromValue = GetBytes;
             Of<ReadOnlyMemory<byte>>.FromValue = GetReadOnlyMemory;
+            Of<string>.FromValue = GetString;
             Of<sbyte>.FromValue = OfCast<sbyte, byte>.FromValue;
             Of<ushort>.FromValue = OfCast<ushort, short>.FromValue;
             Of<uint>.FromValue = OfCast<uint, int>.FromValue;
@@ -67,8 +68,8 @@ namespace Sakuno.SQLite
         static unsafe byte[] GetBytes(SQLiteStatementHandle handle, int column)
         {
             var bytes = SQLiteNativeMethods.sqlite3_column_blob(handle, column);
-            if (bytes == IntPtr.Zero)
-                return null;
+            if (bytes == null)
+                return Array.Empty<byte>();
 
             var length = SQLiteNativeMethods.sqlite3_column_bytes(handle, column);
             var result = new byte[length];
@@ -81,12 +82,23 @@ namespace Sakuno.SQLite
         static unsafe ReadOnlyMemory<byte> GetReadOnlyMemory(SQLiteStatementHandle handle, int column) =>
             Of<byte[]>.FromStatement(handle, column);
 
+        static unsafe string GetString(SQLiteStatementHandle handle, int column)
+        {
+            var bytes = SQLiteNativeMethods.sqlite3_column_blob(handle, column);
+            if (bytes == null)
+                return string.Empty;
+
+            var length = SQLiteNativeMethods.sqlite3_column_bytes(handle, column);
+
+            return Encoding.UTF8.GetString(bytes, length);
+        }
+
         static object GetNonGeneric(SQLiteStatementHandle handle, int column) =>
             SQLiteNativeMethods.sqlite3_column_type(handle, column) switch
             {
                 SQLiteDatatype.Integer => SQLiteNativeMethods.sqlite3_column_int64(handle, column),
                 SQLiteDatatype.Float => SQLiteNativeMethods.sqlite3_column_double(handle, column),
-                SQLiteDatatype.Text => SQLiteNativeMethods.sqlite3_column_text(handle, column),
+                SQLiteDatatype.Text => GetString(handle, column),
                 SQLiteDatatype.Blob => GetBytes(handle, column),
                 SQLiteDatatype.Null => (object)null,
                 _ => throw new InvalidOperationException(),
@@ -100,8 +112,8 @@ namespace Sakuno.SQLite
         static unsafe byte[] GetBytes(SQLiteValueHandle handle)
         {
             var bytes = SQLiteNativeMethods.sqlite3_value_blob(handle);
-            if (bytes == IntPtr.Zero)
-                return null;
+            if (bytes == null)
+                return Array.Empty<byte>();
 
             var length = SQLiteNativeMethods.sqlite3_value_bytes(handle);
             var result = new byte[length];
@@ -113,6 +125,17 @@ namespace Sakuno.SQLite
         }
         static unsafe ReadOnlyMemory<byte> GetReadOnlyMemory(SQLiteValueHandle handle) =>
             Of<byte[]>.FromValue(handle);
+
+        static unsafe string GetString(SQLiteValueHandle handle)
+        {
+            var bytes = SQLiteNativeMethods.sqlite3_value_blob(handle);
+            if (bytes == null)
+                return null;
+
+            var length = SQLiteNativeMethods.sqlite3_value_bytes(handle);
+
+            return Encoding.UTF8.GetString(bytes, length);
+        }
 
         static SQLiteResultCode BindText(SQLiteStatementHandle handle, int index, string value)
         {
