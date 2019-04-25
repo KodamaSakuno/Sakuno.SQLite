@@ -74,7 +74,7 @@ namespace Sakuno.SQLite
             var result = new byte[length];
 
             fixed (byte* buffer = result)
-                Unsafe.CopyBlock(buffer, (void*)bytes, (uint)length);
+                Unsafe.CopyBlockUnaligned(buffer, (void*)bytes, (uint)length);
 
             return result;
         }
@@ -107,7 +107,7 @@ namespace Sakuno.SQLite
             var result = new byte[length];
 
             fixed (byte* buffer = result)
-                Unsafe.CopyBlock(buffer, (void*)bytes, (uint)length);
+                Unsafe.CopyBlockUnaligned(buffer, (void*)bytes, (uint)length);
 
             return result;
         }
