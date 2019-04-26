@@ -173,7 +173,7 @@ namespace Sakuno.SQLite.Tests
             public string ToText(DateTimeOffset value) => value.ToString();
 
             public DateTimeOffset FromFloat(double value) => throw new NotSupportedException();
-            public DateTimeOffset FromBlob(ReadOnlyMemory<byte> value) => throw new NotSupportedException();
+            public DateTimeOffset FromBlob(ReadOnlySpan<byte> value) => throw new NotSupportedException();
             public ReadOnlyMemory<byte> ToBlob(DateTimeOffset value) => throw new NotSupportedException();
             public double ToFloat(DateTimeOffset value) => throw new NotSupportedException();
         }
@@ -187,9 +187,9 @@ namespace Sakuno.SQLite.Tests
             public SQLiteDatatype DefaultDatatype => SQLiteDatatype.Blob;
 
 #if !NET461
-            public Guid FromBlob(ReadOnlyMemory<byte> value) => new Guid(value.Span);
+            public Guid FromBlob(ReadOnlySpan<byte> value) => new Guid(value);
 #else
-            public Guid FromBlob(ReadOnlyMemory<byte> value) => new Guid(value.ToArray());
+            public Guid FromBlob(ReadOnlySpan<byte> value) => new Guid(value.ToArray());
 #endif
             public Guid FromText(string value) => Guid.Parse(value);
 

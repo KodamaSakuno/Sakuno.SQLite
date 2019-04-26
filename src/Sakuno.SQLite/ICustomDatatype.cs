@@ -14,7 +14,7 @@ namespace Sakuno.SQLite
         T FromInteger(long value);
         T FromFloat(double value);
         T FromText(string value);
-        T FromBlob(ReadOnlyMemory<byte> value);
+        T FromBlob(ReadOnlySpan<byte> value);
 
         long ToInteger(T value);
         double ToFloat(T value);

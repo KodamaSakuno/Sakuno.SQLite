@@ -325,12 +325,14 @@ namespace Sakuno.SQLite
 
         public static class OfCustom<T>
         {
+            delegate T FromBlob(ReadOnlySpan<byte> value);
+
             public static Func<SQLiteValue, T> FromValue;
 
             static Func<long, T> _fromInteger;
             static Func<double, T> _fromFloat;
             static Func<string, T> _fromText;
-            static Func<ReadOnlyMemory<byte>, T> _fromBlob;
+            static FromBlob _fromBlob;
 
             public static SQLiteDatatype DefaultDatatype;
 
@@ -386,7 +388,7 @@ namespace Sakuno.SQLite
                 SQLiteDatatype.Integer => _fromInteger(value.Get<long>()),
                 SQLiteDatatype.Float => _fromFloat(value.Get<double>()),
                 SQLiteDatatype.Text => _fromText(value.Get<string>()),
-                SQLiteDatatype.Blob => _fromBlob(value.Get<ReadOnlyMemory<byte>>()),
+                SQLiteDatatype.Blob => _fromBlob(value.Get<BlobInfo>().GetSpan()),
                 SQLiteDatatype.Null => default,
                 _ => throw new InvalidOperationException(),
             };
